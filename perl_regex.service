@@ -1,0 +1,21 @@
+<service name="perl_regex">
+  <summary>Use of the perl command for text editing</summary>
+  <description>Obs service that will do regex</description>
+  <parameter name="noop">
+    <description>Do nothing. Needed, when we need only perl build dependency</description>
+    <allowedvalue>enable</allowedvalue>
+    <allowedvalue>disable</allowedvalue>
+  </parameter>
+  <parameter name="file">
+    <description>File for regex parsing (glob allowed)</description>
+  </parameter>
+  <parameter name="regex">
+    <description>Regex to execute</description>
+  </parameter>
+  <parameter name="regexfile">
+    <description>Regex file to execute</description>
+  </parameter>
+  <parameter name="outfile">
+    <description>File for save (optional)</description>
+  </parameter>
+</service>

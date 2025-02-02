@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+=head1 NAME
+
+/usr/lib/obs/service/perl_regex -
+
+=head1 SYNOPSIS
+
+/usr/lib/obs/service/perl_regex [options]
+
+Options:
+
+   --file               File for regex parsing
+   --regex              Regex to execute
+   --regexfile          Regex file to execute
+   --outfile            File for save (optional)
+   --outdir             Output directory
+   --noop               Do nothing
+=cut
+use Pod::Usage;
+use Getopt::Long;
+use Path::Tiny;
+
+no warnings "deprecated";
+
+our $help, $file, $outfile, $noop, $directory, @regex;
+our $code = 0;
+
+GetOptions(
+    'help'                 => \$help,
+    'regex=s'              => sub{
+      push @regex, $_[1];
+    },
+    'file=s'               => \$file,
+    'regexfile=s'          => sub{
+      push @regex, path($_[1])->slurp_utf8();
+    },
+    'outfile=s'            => \$outfile,
+    'outdir=s'             => \$outdir,
+    'noop=s'               => \$noop
+);
+
+if ($noop eq "enable"){
+  exit(0);
+}
+
+if ( $help ){
+   retlabel:
+   pod2usage({-exitval => $code, -input => __FILE__});
+}
+
+if ((!defined($file)) || (scalar @regex == 0) || (!defined($outdir))){
+   $code = 1;
+   goto retlabel;
+}
+
+
+$file = [glob($file)]->[0];
+my $regex = join(' ; ', @regex);
+
+if (!defined($outfile)){
+   $outfile = $file;
+}
+
+$file = path($file)->absolute();
+$outfile = path($outfile)->absolute($outdir);
+
+open(my $fh, '>', "$outfile") or die "cannot open $outfile for write";
+select($fh);
+
+open(my $rd, '<', "$file") or die "cannot open $file for read";
+
+my $count = 1;
+while( our $_ = <$rd> ) {
+    our $. = $count;
+    print(eval("$regex ; return \$_"));
+    $count ++;
+}
+close ($rd);
+close ($fh);
