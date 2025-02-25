@@ -63,8 +63,18 @@ if (!defined($outfile)){
 
 $file = path($file)->absolute();
 $outfile = path($outfile)->absolute($outdir);
+my $outfile_wr = $outfile;
+my $index = 0;
 
-open(my $fh, '>', "$outfile") or die "cannot open $outfile for write";
+if ($file eq $outfile){
+  $index = 1;
+  while (-f $outfile_wr){
+    $outfile_wr = $outfile . "$index";
+    $index += 1;
+  }
+}
+
+open(my $fh, '>', "$outfile_wr") or die "cannot open $outfile for write";
 select($fh);
 
 open(my $rd, '<', "$file") or die "cannot open $file for read";
@@ -77,3 +87,8 @@ while( our $_ = <$rd> ) {
 }
 close ($rd);
 close ($fh);
+
+if ($index){
+  unlink $outfile;
+  rename $outfile_wr, $outfile;
+}
