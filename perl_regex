@@ -68,8 +68,9 @@ my $index = 0;
 
 if ($file eq $outfile){
   $index = 1;
+  my $num = 12 ** 8;
   while (-f $outfile_wr){
-    $outfile_wr = $outfile . "$index";
+    $outfile_wr = $outfile . hexstr(rand($num)) . hexstr($index);
     $index += 1;
   }
 }
@@ -91,4 +92,9 @@ close ($fh);
 if ($index){
   unlink $outfile;
   rename $outfile_wr, $outfile;
+}
+
+sub hexstr {
+    my $number = shift;
+    return sprintf '%08x', int($number);
 }
