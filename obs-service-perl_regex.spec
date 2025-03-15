@@ -15,6 +15,7 @@ Source1:        %{service}.service
 Requires:       /usr/bin/perl
 BuildRequires:  (rpm-build-perl or perl-generators or %{_rpmconfigdir}/perl.req)
 BuildRequires:  rpm_macro(_obs_service_dir)
+BuildRequires:  perl(Path::Tiny)
 
 %description
 %{summary}.
